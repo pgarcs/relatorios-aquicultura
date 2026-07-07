@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel IA — Correção de Relatórios | IFMA Maracanã</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh}
+header{background:linear-gradient(135deg,#04497A,#0E9AA7);padding:20px 24px;display:flex;align-items:center;gap:14px}
+header .logo{font-size:28px}
+header h1{font-size:18px;font-weight:700;line-height:1.3}
+header p{font-size:12px;opacity:.8;margin-top:3px}
+header .badge{background:rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;margin-top:6px;display:inline-block}
+main{padding:20px;max-width:900px;margin:0 auto}
+.section{background:#161b22;border:1px solid #30363d;border-radius:10px;margin-bottom:18px;overflow:hidden}
+.sec-head{padding:14px 18px;background:#1c2128;border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:space-between}
+.sec-head h2{font-size:15px;font-weight:700;color:#e6edf3}
+.sec-head .tag{background:#1A7295;color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700}
+.sec-body{padding:16px 18px}
+textarea{width:100%;background:#0d1117;border:1.5px solid #30363d;border-radius:8px;color:#e6edf3;padding:12px;font-family:'Courier New',monospace;font-size:13px;resize:vertical;min-height:200px;line-height:1.5}
+textarea:focus{border-color:#1A7295;outline:none;box-shadow:0 0 0 3px rgba(26,114,149,.2)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
+.btn-primary{background:linear-gradient(135deg,#1A7295,#0E9AA7);color:#fff}
+.btn-primary:hover{opacity:.9}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-export{background:#1A7A3C;color:#fff}
+.btn-export:hover{background:#145A32}
+.btn-clear{background:#30363d;color:#8b949e}
+.btn-clear:hover{background:#3d444d;color:#e6edf3}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.loader{display:none;text-align:center;padding:30px;color:#8b949e}
+.loader .spin{font-size:32px;animation:spin 1s linear infinite;display:inline-block;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-card{display:none;background:#0d1117;border:1px solid #30363d;border-radius:10px;overflow:hidden;margin-top:0}
+.dupla-bar{background:#1c2128;padding:14px 18px;border-bottom:1px solid #30363d}
+.dupla-bar h3{font-size:15px;color:#e6edf3;margin-bottom:4px}
+.dupla-bar p{font-size:13px;color:#8b949e}
+.crit-table{width:100%;border-collapse:collapse}
+.crit-table th{background:#1c2128;padding:10px 14px;text-align:left;font-size:12px;color:#8b949e;font-weight:600;border-bottom:1px solid #30363d}
+.crit-table td{padding:12px 14px;border-bottom:1px solid #21262d;font-size:13px;vertical-align:top}
+.crit-table tr:last-child td{border-bottom:none}
+.nota-ia{font-size:16px;font-weight:700;color:#e6edf3;white-space:nowrap}
+.just{color:#8b949e;line-height:1.5;font-size:12.5px}
+.nota-edit{background:#0d1117;border:1.5px solid #30363d;border-radius:6px;color:#e6edf3;width:70px;padding:6px 8px;font-size:15px;font-weight:700;text-align:center}
+.nota-edit:focus{border-color:#0E9AA7;outline:none}
+.crit-name{font-weight:700;font-size:13px;color:#e6edf3;margin-bottom:2px}
+.crit-max{font-size:11px;color:#8b949e}
+.total-bar{background:linear-gradient(135deg,#04497A,#1A7295);padding:16px 18px;display:flex;align-items:center;justify-content:space-between}
+.total-label{font-size:15px;font-weight:700;color:#fff}
+.total-val{font-size:28px;font-weight:800;color:#fff}
+.total-sit{font-size:13px;margin-top:2px;padding:3px 12px;border-radius:20px;font-weight:700;display:inline-block}
+.sit-ap{background:#1A7A3C;color:#fff}
+.sit-rec{background:#E67E22;color:#fff}
+.sit-rep{background:#B03030;color:#fff}
+.obs-box{background:#1c2128;border-top:1px solid #30363d;padding:14px 18px}
+.obs-box p{font-size:13px;color:#8b949e;line-height:1.5}
+.obs-box strong{color:#e6edf3}
+.hist-item{background:#1c2128;border:1px solid #30363d;border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.hist-item:hover{border-color:#1A7295;background:#21262d}
+.hist-info h4{font-size:13px;font-weight:700;color:#e6edf3}
+.hist-info p{font-size:12px;color:#8b949e;margin-top:2px}
+.hist-nota{font-size:20px;font-weight:800;color:#0E9AA7}
+.empty-hist{text-align:center;padding:24px;color:#8b949e;font-size:13px}
+.error-box{background:#1c1010;border:1px solid #B03030;border-radius:8px;padding:14px;color:#f85149;font-size:13px;margin-top:12px;display:none}
+.chip{display:inline-block;background:#21262d;border-radius:4px;padding:2px 6px;font-size:11px;color:#8b949e;font-family:monospace}
+@media(max-width:600px){.crit-table th:nth-child(2),.crit-table td:nth-child(2){display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🤖</div>
+  <div>
+    <h1>Painel de Correção com IA</h1>
+    <p>Química Aplicada à Aquicultura · IFMA Campus São Luís Maracanã · Prof. Paulo Garcês · 2026.1</p>
+    <span class="badge">Powered by Claude — Relatórios Experimentais em Dupla</span>
+  </div>
+</header>
+<main>
+
+<!-- ENTRADA -->
+<div class="section">
+  <div class="sec-head">
+    <h2>📋 Relatório Recebido por E-mail (PDF)</h2>
+    <span class="tag">Passo 1</span>
+  </div>
+  <div class="sec-body">
+    <div style="background:#1c2128;border:1px solid #30363d;border-radius:8px;padding:12px 14px;margin-bottom:14px">
+      <label style="font-size:12px;font-weight:600;color:#8b949e;display:block;margin-bottom:6px">🔑 Chave de API Anthropic (necessária ao abrir este arquivo fora do Claude.ai)</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." style="width:100%;background:#0d1117;border:1.5px solid #30363d;border-radius:6px;color:#e6edf3;padding:9px 12px;font-family:'Courier New',monospace;font-size:13px" oninput="salvarApiKey()">
+      <p style="font-size:11px;color:#6e7681;margin-top:6px">Obtenha em <span class="chip">console.anthropic.com</span> → API Keys. Fica salva apenas no seu navegador (localStorage), nunca é enviada a ninguém além da Anthropic.</p>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;font-weight:600;color:#8b949e;display:block;margin-bottom:6px">📎 Anexe o PDF do relatório (recebido por e-mail da dupla)</label>
+      <input type="file" id="pdfInput" accept="application/pdf" onchange="onPdfSelected()" style="width:100%;background:#0d1117;border:1.5px dashed #30363d;border-radius:8px;color:#e6edf3;padding:10px 12px;font-size:13px">
+      <p id="pdfFileName" style="font-size:11px;color:#6e7681;margin-top:6px">Nenhum arquivo selecionado.</p>
+    </div>
+    <p style="font-size:12px;color:#6e7681;text-align:center;margin:6px 0 12px">— ou, alternativamente, cole o texto do relatório abaixo —</p>
+    <textarea id="msgInput" placeholder="📋 (Opcional) Cole aqui o texto do relatório, caso não esteja anexando o PDF...
+
+Exemplo:
+📋 RELATÓRIO EXPERIMENTAL — EXPERIMENTO 01 — DETERMINAÇÃO DE PH
+🏫 IFMA Maracanã..."></textarea>
+    <div class="error-box" id="errorBox"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnCorrigir" onclick="corrigir()">
+        🤖 Corrigir com IA
+      </button>
+      <button class="btn btn-clear" onclick="limparEntrada()">
+        🗑 Limpar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loader" id="loader">
+  <div class="spin">⚙️</div>
+  <p style="font-size:14px;font-weight:600">Analisando relatório com IA...</p>
+  <p style="font-size:12px;margin-top:6px">Avaliando cada critério da rubrica</p>
+</div>
+
+<!-- RESULTADO -->
+<div class="section" id="resultSection" style="display:none">
+  <div class="sec-head">
+    <h2>📊 Resultado da Correção</h2>
+    <span class="tag">Passo 2 — Revisar e Ajustar</span>
+  </div>
+  <div class="sec-body" style="padding:0">
+    <div class="result-card" id="resultCard" style="display:block">
+      <div class="dupla-bar">
+        <h3 id="res-exp">—</h3>
+        <p id="res-dupla">—</p>
+      </div>
+      <table class="crit-table">
+        <thead>
+          <tr>
+            <th>Critério</th>
+            <th>Nota IA</th>
+            <th>Justificativa</th>
+            <th>Nota Final</th>
+          </tr>
+        </thead>
+        <tbody id="critBody"></tbody>
+      </table>
+      <div class="total-bar">
+        <div>
+          <div class="total-label">Nota Final (editável)</div>
+          <div id="res-sit" class="total-sit sit-ap" style="margin-top:6px">—</div>
+        </div>
+        <div class="total-val" id="res-total">0,0</div>
+      </div>
+      <div class="obs-box" id="obsBox">
+        <strong style="font-size:13px;color:#e6edf3">Observações da IA:</strong>
+        <p id="res-obs">—</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AÇÕES -->
+<div class="section" id="actSection" style="display:none">
+  <div class="sec-head">
+    <h2>💾 Ações</h2>
+    <span class="tag">Passo 3</span>
+  </div>
+  <div class="sec-body">
+    <div class="btn-row">
+      <button class="btn btn-export" onclick="exportarCSV()">📥 Exportar para Excel (CSV)</button>
+      <button class="btn btn-primary" onclick="salvarHistorico()">💾 Salvar no Histórico</button>
+      <button class="btn btn-clear" onclick="novaCorrecao()">➕ Nova Correção</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTÓRICO -->
+<div class="section">
+  <div class="sec-head">
+    <h2>📚 Histórico da Sessão</h2>
+    <span class="tag">Relatórios Corrigidos</span>
+  </div>
+  <div class="sec-body" id="histBody">
+    <div class="empty-hist">Nenhum relatório corrigido ainda nesta sessão.<br>Cole uma mensagem acima e clique em <b>Corrigir com IA</b>.</div>
+  </div>
+</div>
+
+</main>
+
+<script>
+const SYSTEM_PROMPT = 'Você é o corretor especializado em Química Aplicada à Aquicultura do IFMA Campus São Luís Maracanã, Prof. Paulo Garcês.\n\nVocê receberá o texto de um relatório experimental de uma dupla de alunos.\n\nRUBRICA (total = 10,0 pontos):\nC1 — DADOS EXPERIMENTAIS (máx 2,0 pts): 2,0=completos e corretos; 1,0=incompletos mas com esforço; 0,5=poucos dados; 0,0=ausente.\nC2 — CÁLCULOS (máx 3,0 pts): 3,0=correto COM desenvolvimento e unidades; 2,0=correto SEM desenvolvimento; 1,5=erro <10% ou erro de conversão; 0,5=método parcialmente correto; 0,0=ausente.\nC3 — ANÁLISE E INTERPRETAÇÃO (máx 2,5 pts): 2,5=diagnóstico correto+proposta fundamentada para todas amostras; 1,5=diagnóstico correto mas proposta superficial; 0,5=parcial; 0,0=ausente.\nC4 — CONCLUSÃO (máx 1,5 pt): 1,5=relaciona teoria+prática com conceitos e equações; 1,0=superficial; 0,5=genérica; 0,0=ausente.\nC5 — QUESTÃO DE DISCUSSÃO (máx 1,0 pt): 1,0=completa e fundamentada; 0,5=parcial; 0,0=ausente.\n\nVALORES DE REFERÊNCIA POR EXPERIMENTO:\nEXP01-pH: faixa 6,5–8,5; [H+]=10^-pH; pOH=14-pH; erro aceito ±0,1 no |metro-kit|\nEXP02-Dureza: D=V(EDTA)×40,04 mg/L CaCO3; faixa 75–300; classificação: <25 muito mole;25-75 mole;75-150 moderada;150-300 dura;>300 muito dura; erro ±5%\nEXP03-Alcalinidade: Alk=V×20 mg/L CaCO3; faixa 30–150; dose=(Alk_des−Alk_atual)×1,68×Prof; erro ±5%\nEXP04-OD: OD=V×0,985 mg/L; OD_sat=468/(31,6+T); %sat=(OD/OD_sat)×100; faixa 5–9; alerta<4; letal<1; erro ±0,1 mg/L\nEXP05-TAN: pKa(T)=0,09018+2729,92/(273,15+T); α=1/(1+10^(pKa-pH)); NH3=[TAN×α]; TAN ideal<1,0; NH3 seguro<0,02; alerta 0,02-0,05; estresse>0,05; erro ±5% em α\nEXP06-Salinidade: S=CE×0,64; M=S/58,44; π=2×M×0,0821×(T+273,15); faixas: FW<0,5; oligo 0,5-5; meso 5-18; poli 18-30; marinha>30; erro ±0,5‰\n\nINSTRUÇÕES: Avalie criteriosamente. Seja justo mas rigoroso. Se os cálculos estiverem corretos mas sem desenvolvimento, aplique penalidade. Verifique se os valores estão dentro das faixas ideais corretas.\n\nResponda EXCLUSIVAMENTE em JSON, sem markdown ou texto fora do JSON:\n{"experimento":"EXP0X — Título","dupla":{"d1":"nome","d2":"nome","turma":"turma","data":"data"},"c1":{"nota":0.0,"max":2.0,"just":"texto"},"c2":{"nota":0.0,"max":3.0,"just":"texto"},"c3":{"nota":0.0,"max":2.5,"just":"texto"},"c4":{"nota":0.0,"max":1.5,"just":"texto"},"c5":{"nota":0.0,"max":1.0,"just":"texto"},"total":0.0,"obs":"observações gerais"}';
+const historico = [];
+let currentResult = null;
+let pdfBase64 = null;
+const CRITS = [
+  {id:'c1',label:'C1 — Dados Experimentais',max:2.0},
+  {id:'c2',label:'C2 — Cálculos',max:3.0},
+  {id:'c3',label:'C3 — Análise e Interpretação',max:2.5},
+  {id:'c4',label:'C4 — Conclusão',max:1.5},
+  {id:'c5',label:'C5 — Questão de Discussão',max:1.0},
+];
+
+function onPdfSelected(){
+  const f = document.getElementById('pdfInput').files[0];
+  const nameEl = document.getElementById('pdfFileName');
+  if(!f){ pdfBase64 = null; nameEl.textContent = 'Nenhum arquivo selecionado.'; return; }
+  if(f.type !== 'application/pdf'){ showError('O arquivo selecionado não é um PDF.'); document.getElementById('pdfInput').value=''; return; }
+  nameEl.textContent = '📄 ' + f.name + ' (lendo...)';
+  const reader = new FileReader();
+  reader.onload = () => {
+    pdfBase64 = reader.result.split(',')[1];
+    nameEl.textContent = '📄 ' + f.name + ' — pronto';
+  };
+  reader.onerror = () => { showError('Não foi possível ler o PDF.'); pdfBase64 = null; };
+  reader.readAsDataURL(f);
+}
+
+function limparEntrada(){
+  document.getElementById('msgInput').value = '';
+  document.getElementById('pdfInput').value = '';
+  document.getElementById('pdfFileName').textContent = 'Nenhum arquivo selecionado.';
+  pdfBase64 = null;
+  hideError();
+}
+
+async function corrigir() {
+  const msg = document.getElementById('msgInput').value.trim();
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if(!apiKey) { showError('Informe sua chave de API Anthropic antes de corrigir (campo no topo).'); return; }
+  if(!pdfBase64 && !msg) { showError('Anexe o PDF do relatório ou cole o texto antes de corrigir.'); return; }
+  if(!pdfBase64 && msg.length < 100) { showError('O texto parece muito curto. Certifique-se de colar o relatório completo.'); return; }
+
+  hideError();
+  document.getElementById('btnCorrigir').disabled = true;
+  document.getElementById('loader').style.display = 'block';
+  document.getElementById('resultSection').style.display = 'none';
+  document.getElementById('actSection').style.display = 'none';
+
+  try {
+    let userContent;
+    if (pdfBase64) {
+      userContent = [
+        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } },
+        { type: 'text', text: 'Avalie o relatório experimental anexado (PDF) conforme a rubrica e os valores de referência do system prompt. Identifique o experimento, a dupla, a turma e a data a partir do conteúdo do PDF. Responda exclusivamente com o JSON especificado.' + (msg ? ('\n\nObservações adicionais do professor: ' + msg) : '') }
+      ];
+    } else {
+      userContent = msg;
+    }
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        system: SYSTEM_PROMPT,
+        messages: [{role:'user', content: userContent}]
+      })
+    });
+
+    const data = await resp.json();
+    if(data.error) throw new Error(data.error.message);
+
+    const raw = data.content.find(b => b.type==='text')?.text || '';
+    const jsonStr = raw.replace(/```json|```/g,'').trim();
+    const result = JSON.parse(jsonStr);
+    currentResult = result;
+    renderResult(result);
+  } catch(e) {
+    showError('Erro ao processar: ' + e.message + '. Verifique se o texto está no formato correto.');
+  } finally {
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('btnCorrigir').disabled = false;
+  }
+}
+
+function renderResult(r) {
+  document.getElementById('res-exp').textContent = r.experimento || '—';
+  const d = r.dupla || {};
+  document.getElementById('res-dupla').textContent =
+    `👤 ${d.d1||'—'}  &  ${d.d2||'—'}  |  Turma: ${d.turma||'—'}  |  Data: ${d.data||'—'}`;
+
+  const tbody = document.getElementById('critBody');
+  tbody.innerHTML = '';
+  CRITS.forEach(c => {
+    const cd = r[c.id] || {};
+    const nota = cd.nota ?? 0;
+    const max = cd.max ?? c.max;
+    const just = cd.just || '—';
+    const cor = nota >= max*0.8 ? '#1A7A3C' : nota >= max*0.5 ? '#E67E22' : '#B03030';
+    tbody.innerHTML += `<tr>
+      <td><div class="crit-name">${c.label}</div><div class="crit-max">Máx: ${max.toFixed(1)} pts</div></td>
+      <td><span class="nota-ia" style="color:${cor}">${nota.toFixed(1)}</span></td>
+      <td><span class="just">${just}</span></td>
+      <td><input class="nota-edit" type="number" min="0" max="${max}" step="0.5" value="${nota.toFixed(1)}" id="edit_${c.id}" onchange="recalcTotal()"></td>
+    </tr>`;
+  });
+
+  recalcTotal();
+  document.getElementById('res-obs').textContent = r.obs || '—';
+  document.getElementById('resultSection').style.display = 'block';
+  document.getElementById('actSection').style.display = 'block';
+  document.getElementById('resultSection').scrollIntoView({behavior:'smooth'});
+}
+
+function recalcTotal() {
+  let total = 0;
+  CRITS.forEach(c => {
+    const el = document.getElementById('edit_'+c.id);
+    if(el) total += parseFloat(el.value)||0;
+  });
+  total = Math.min(10, Math.max(0, Math.round(total*10)/10));
+  document.getElementById('res-total').textContent = total.toFixed(1).replace('.',',');
+  const sit = document.getElementById('res-sit');
+  if(total >= 7.0) { sit.textContent = '✅ Aprovado'; sit.className='total-sit sit-ap'; }
+  else if(total >= 5.0) { sit.textContent = '⚠️ Recuperação'; sit.className='total-sit sit-rec'; }
+  else { sit.textContent = '❌ Reprovado'; sit.className='total-sit sit-rep'; }
+  if(currentResult) currentResult._notaFinal = total;
+}
+
+function salvarHistorico() {
+  if(!currentResult) return;
+  const d = currentResult.dupla || {};
+  const nota = currentResult._notaFinal ?? currentResult.total ?? 0;
+  historico.push({...currentResult, _notaFinal: nota, _ts: new Date().toLocaleTimeString('pt-BR')});
+  renderHistorico();
+  alert('✅ Relatório salvo no histórico desta sessão!');
+}
+
+function renderHistorico() {
+  const el = document.getElementById('histBody');
+  if(!historico.length) {
+    el.innerHTML = '<div class="empty-hist">Nenhum relatório salvo ainda.</div>';
+    return;
+  }
+  el.innerHTML = historico.map((h,i) => {
+    const d = h.dupla || {};
+    const nota = h._notaFinal ?? 0;
+    const cor = nota >= 7 ? '#1A7A3C' : nota >= 5 ? '#E67E22' : '#B03030';
+    return `<div class="hist-item" onclick="recarregarHistorico(${i})">
+      <div class="hist-info">
+        <h4>${d.d1||'—'} & ${d.d2||'—'}</h4>
+        <p>${h.experimento||'—'}  ·  Turma: ${d.turma||'—'}  ·  ${h._ts||''}</p>
+      </div>
+      <div class="hist-nota" style="color:${cor}">${nota.toFixed(1).replace('.',',')}</div>
+    </div>`;
+  }).join('');
+}
+
+function recarregarHistorico(i) {
+  currentResult = historico[i];
+  renderResult(currentResult);
+}
+
+function exportarCSV() {
+  if(!historico.length) { alert('Salve ao menos um relatório no histórico antes de exportar.'); return; }
+  const header = ['Discente 1','Discente 2','Turma','Data','Experimento','C1 (2,0)','C2 (3,0)','C3 (2,5)','C4 (1,5)','C5 (1,0)','Nota Final','Situação'];
+  const rows = historico.map(h => {
+    const d = h.dupla || {};
+    const nota = h._notaFinal ?? 0;
+    const sit = nota >= 7 ? 'Aprovado' : nota >= 5 ? 'Recuperação' : 'Reprovado';
+    return [d.d1||'',d.d2||'',d.turma||'',d.data||'',h.experimento||'',
+      (h.c1?.nota??0).toFixed(1),(h.c2?.nota??0).toFixed(1),(h.c3?.nota??0).toFixed(1),
+      (h.c4?.nota??0).toFixed(1),(h.c5?.nota??0).toFixed(1),nota.toFixed(1),sit
+    ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
+  });
+  const csv = '﻿' + [header.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+  a.download = `Notas_RelatoriosExp_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.csv`;
+  a.click();
+}
+
+function novaCorrecao() {
+  currentResult = null;
+  limparEntrada();
+  document.getElementById('resultSection').style.display = 'none';
+  document.getElementById('actSection').style.display = 'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+function hideError() {
+  document.getElementById('errorBox').style.display = 'none';
+}
+
+function salvarApiKey() {
+  const v = document.getElementById('apiKeyInput').value.trim();
+  try { localStorage.setItem('labqc_apikey', v); } catch(e) {}
+}
+function carregarApiKey() {
+  try {
+    const v = localStorage.getItem('labqc_apikey');
+    if(v) document.getElementById('apiKeyInput').value = v;
+  } catch(e) {}
+}
+carregarApiKey();
+
+</script>
+</body>
+</html>
