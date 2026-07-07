@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Relatório Exp. 01 — Determinação de pH em Amostras</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#EBF5FB;color:#21295C;font-size:15px}
+header{background:linear-gradient(135deg,#04497A,#1A7295);color:#fff;padding:18px 20px 14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+header h1{font-size:16px;font-weight:700;line-height:1.3}
+header p{font-size:12px;opacity:.85;margin-top:4px}
+.badge{display:inline-block;background:#0E9AA7;color:#fff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;margin-top:6px}
+main{padding:12px;max-width:760px;margin:0 auto;padding-bottom:80px}
+.card{background:#fff;border-radius:10px;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.10)}
+.card-header{padding:12px 16px;display:flex;align-items:center;gap:10px}
+.card-header h2{font-size:15px;font-weight:700;flex:1}
+.card-header .pts{background:#04497A;color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.card-body{padding:14px 16px}
+.field-group{margin-bottom:10px}
+.field-group label{display:block;font-size:12px;font-weight:600;color:#1A7295;margin-bottom:4px}
+.field-group input,.field-group textarea,.field-group select{width:100%;border:1.5px solid #D5DBDB;border-radius:7px;padding:9px 12px;font-size:14px;font-family:inherit;transition:border .2s;background:#fff}
+.field-group input:focus,.field-group textarea:focus{border-color:#1A7295;outline:none;box-shadow:0 0 0 3px rgba(26,114,149,.15)}
+.field-group textarea{resize:vertical;min-height:80px}
+.sample-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sample-label{background:#D6EAF8;border-radius:6px;padding:5px 8px;font-size:12px;font-weight:700;color:#04497A;text-align:center;margin-bottom:6px}
+.c3-sample{background:#F8FBFF;border:1px solid #D6EAF8;border-radius:8px;padding:12px;margin-bottom:10px}
+.c3-sample h4{font-size:13px;font-weight:700;color:#04497A;margin-bottom:8px}
+.radio-group{display:flex;gap:16px;margin-bottom:8px}
+.radio-group label{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.radio-group input[type=radio]{accent-color:#1A7295;width:16px;height:16px}
+.alert{background:#FFF8E1;border-left:4px solid #E67E22;border-radius:0 6px 6px 0;padding:10px 14px;font-size:13px;color:#784212;margin-bottom:10px}
+.alert b{color:#D35400}
+.q-box{background:#EBF5FB;border-radius:8px;padding:12px;margin-bottom:10px;font-size:13.5px;color:#04497A;line-height:1.5;border-left:4px solid #0E9AA7}
+.footer-bar{position:fixed;bottom:0;left:0;right:0;background:#04497A;padding:12px 16px;display:flex;gap:10px;z-index:200}
+.btn-main{flex:1;background:#0E9AA7;color:#fff;border:none;border-radius:8px;padding:14px 10px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-clear{background:#fff3;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:8px;padding:14px 14px;font-size:20px;cursor:pointer}
+.btn-main:active,.btn-clear:active{opacity:.8}
+.req{color:#B03030;font-size:11px}
+@media(min-width:600px){.sample-grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧪 Experimento 01 — Determinação de pH em Amostras de Água de Cultivo</h1>
+  <p>Química Aplicada à Aquicultura · IFMA Maracanã · 2026.1</p>
+  <span class="badge">Unidade III · Relatório em Dupla</span>
+</header>
+<main>
+
+<!-- IDENTIFICAÇÃO -->
+<div class="card">
+  <div class="card-header" style="background:#04497A">
+    <h2 style="color:#fff">👥 Identificação da Dupla</h2>
+    <span class="pts" style="background:rgba(255,255,255,.2)">Obrigatório</span>
+  </div>
+  <div class="card-body">
+    <div class="alert"><b>⚠ Atenção:</b> Preencha os dois nomes completos. O formulário não envia se houver campos em branco.</div>
+    <div class="field-group"><label for="nome1">Nome completo — Discente 1 <span class="req">*</span></label>
+    <input type="text" id="nome1" placeholder="Nome completo" required></div>
+    <div class="field-group"><label for="nome2">Nome completo — Discente 2 <span class="req">*</span></label>
+    <input type="text" id="nome2" placeholder="Nome completo" required></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="field-group"><label for="turma">Turma <span class="req">*</span></label>
+      <input type="text" id="turma" placeholder="Ex.: AQUIC 1P" required></div>
+      <div class="field-group"><label for="data_aula">Data da aula prática <span class="req">*</span></label>
+      <input type="date" id="data_aula" required></div>
+    </div>
+  </div>
+</div>
+
+<!-- C1 -->
+<div class="card">
+  <div class="card-header" style="background:#1A7295">
+    <h2 style="color:#fff">⚗️ Critério 1 — Dados Experimentais</h2>
+    <span class="pts">2,0 pts</span>
+  </div>
+  <div class="card-body">
+    <p style="font-size:13px;color:#5D6D7E;margin-bottom:12px">Registre os valores medidos durante a aula prática para cada uma das três amostras.</p>
+    <div class="sample-grid">
+<div class="sample-label">Amostra 1 — Viveiro</div><div class="field-group">
+<label for="c1_s1_f1">pH pHmetro</label>
+<input type="number" id="c1_s1_f1" placeholder="ex.: 7.20" step="0.01" required>
+</div><div class="field-group">
+<label for="c1_s1_f2">pH kit colorimétrico</label>
+<input type="number" id="c1_s1_f2" placeholder="ex.: 7.0" step="0.01" required>
+</div><div class="field-group">
+<label for="c1_s1_f3">Temperatura (°C)</label>
+<input type="number" id="c1_s1_f3" placeholder="ex.: 28.5" step="0.01" required>
+</div><div class="sample-label">Amostra 2 — Torneira</div><div class="field-group">
+<label for="c1_s2_f1">pH pHmetro</label>
+<input type="number" id="c1_s2_f1" placeholder="ex.: 7.20" step="0.01" required>
+</div><div class="field-group">
+<label for="c1_s2_f2">pH kit colorimétrico</label>
+<input type="number" id="c1_s2_f2" placeholder="ex.: 7.0" step="0.01" required>
+</div><div class="field-group">
+<label for="c1_s2_f3">Temperatura (°C)</label>
+<input type="number" id="c1_s2_f3" placeholder="ex.: 28.5" step="0.01" required>
+</div><div class="sample-label">Amostra 3 — Salgada sintética</div><div class="field-group">
+<label for="c1_s3_f1">pH pHmetro</label>
+<input type="number" id="c1_s3_f1" placeholder="ex.: 7.20" step="0.01" required>
+</div><div class="field-group">
+<label for="c1_s3_f2">pH kit colorimétrico</label>
+<input type="number" id="c1_s3_f2" placeholder="ex.: 7.0" step="0.01" required>
+</div><div class="field-group">
+<label for="c1_s3_f3">Temperatura (°C)</label>
+<input type="number" id="c1_s3_f3" placeholder="ex.: 28.5" step="0.01" required>
+</div>
+    </div>
+  </div>
+</div>
+
+<!-- C2 -->
+<div class="card">
+  <div class="card-header" style="background:#0E9AA7">
+    <h2 style="color:#fff">🧮 Critério 2 — Cálculos</h2>
+    <span class="pts">3,0 pts</span>
+  </div>
+  <div class="card-body">
+    <div class="alert"><b>Atenção:</b> Demonstre todos os passos, com unidades. Relatórios sem desenvolvimento dos cálculos recebem no máximo 2,0 pts neste critério.</div>
+<div class="field-group">
+<label for="c2_p1">1. Cálculo de [H⁺] — Amostra 1</label>
+<textarea id="c2_p1" rows="3" placeholder="pH medido A1: ___ → [H⁺] = 10^(−pH) = ___ mol/L; pOH = 14 − pH = ___" required></textarea>
+</div><div class="field-group">
+<label for="c2_p2">2. Cálculo de [H⁺] — Amostra 2</label>
+<textarea id="c2_p2" rows="3" placeholder="pH medido A2: ___ → [H⁺] = ___ mol/L; pOH = ___" required></textarea>
+</div><div class="field-group">
+<label for="c2_p3">3. Diferença pHmetro vs Kit (todas amostras)</label>
+<textarea id="c2_p3" rows="3" placeholder="|pH_metro − pH_kit| A1=___; A2=___; A3=___" required></textarea>
+</div>
+  </div>
+</div>
+
+<!-- C3 -->
+<div class="card">
+  <div class="card-header" style="background:#1A7A3C">
+    <h2 style="color:#fff">🔬 Critério 3 — Análise e Interpretação</h2>
+    <span class="pts">2,5 pts</span>
+  </div>
+  <div class="card-body">
+    <p style="font-size:13px;color:#5D6D7E;margin-bottom:12px">Para cada amostra: indique se está dentro da faixa ideal, diagnostique e proponha ação corretiva.</p>
+<div class="c3-sample">
+<h4>Amostra 1 — Viveiro</h4>
+<div class="radio-group">
+  <label><input type="radio" name="c3_s1_faixa" value="Sim"> ✅ Dentro da faixa ideal (6,5 – 8,5)</label>
+  <label><input type="radio" name="c3_s1_faixa" value="Não"> ❌ Fora da faixa</label>
+</div>
+<div class="field-group">
+  <label for="c3_s1_diag">Diagnóstico — o que o valor indica para o cultivo?</label>
+  <textarea id="c3_s1_diag" rows="2" placeholder="Ex.: pH abaixo do ideal — estresse nos peixes; risco de toxicidade de Al³⁺..." required></textarea>
+</div>
+<div class="field-group">
+  <label for="c3_s1_acao">Ação corretiva proposta (fundamentada quimicamente)</label>
+  <textarea id="c3_s1_acao" rows="2" placeholder="Ex.: Aplicar calagem com CaCO₃; dose = ..." required></textarea>
+</div>
+</div><div class="c3-sample">
+<h4>Amostra 2 — Torneira</h4>
+<div class="radio-group">
+  <label><input type="radio" name="c3_s2_faixa" value="Sim"> ✅ Dentro da faixa ideal (6,5 – 8,5)</label>
+  <label><input type="radio" name="c3_s2_faixa" value="Não"> ❌ Fora da faixa</label>
+</div>
+<div class="field-group">
+  <label for="c3_s2_diag">Diagnóstico — o que o valor indica para o cultivo?</label>
+  <textarea id="c3_s2_diag" rows="2" placeholder="Ex.: pH abaixo do ideal — estresse nos peixes; risco de toxicidade de Al³⁺..." required></textarea>
+</div>
+<div class="field-group">
+  <label for="c3_s2_acao">Ação corretiva proposta (fundamentada quimicamente)</label>
+  <textarea id="c3_s2_acao" rows="2" placeholder="Ex.: Aplicar calagem com CaCO₃; dose = ..." required></textarea>
+</div>
+</div><div class="c3-sample">
+<h4>Amostra 3 — Salgada sintética</h4>
+<div class="radio-group">
+  <label><input type="radio" name="c3_s3_faixa" value="Sim"> ✅ Dentro da faixa ideal (6,5 – 8,5)</label>
+  <label><input type="radio" name="c3_s3_faixa" value="Não"> ❌ Fora da faixa</label>
+</div>
+<div class="field-group">
+  <label for="c3_s3_diag">Diagnóstico — o que o valor indica para o cultivo?</label>
+  <textarea id="c3_s3_diag" rows="2" placeholder="Ex.: pH abaixo do ideal — estresse nos peixes; risco de toxicidade de Al³⁺..." required></textarea>
+</div>
+<div class="field-group">
+  <label for="c3_s3_acao">Ação corretiva proposta (fundamentada quimicamente)</label>
+  <textarea id="c3_s3_acao" rows="2" placeholder="Ex.: Aplicar calagem com CaCO₃; dose = ..." required></textarea>
+</div>
+</div>
+  </div>
+</div>
+
+<!-- C4 -->
+<div class="card">
+  <div class="card-header" style="background:#D35400">
+    <h2 style="color:#fff">📝 Critério 4 — Conclusão</h2>
+    <span class="pts">1,5 pts</span>
+  </div>
+  <div class="card-body">
+    <p style="font-size:13px;color:#5D6D7E;margin-bottom:10px">Relacione os resultados obtidos com a teoria estudada. O que o experimento demonstrou sobre a qualidade da água de cultivo? Use conceitos e equações químicas.</p>
+    <div class="field-group"><label for="c4">Conclusão <span class="req">*</span></label>
+    <textarea id="c4" rows="5" placeholder="O experimento demonstrou que..." required></textarea></div>
+  </div>
+</div>
+
+<!-- C5 -->
+<div class="card">
+  <div class="card-header" style="background:#6C3483">
+    <h2 style="color:#fff">❓ Critério 5 — Questão de Discussão</h2>
+    <span class="pts">1,0 pt</span>
+  </div>
+  <div class="card-body">
+    <div class="q-box">Por que o pH de um viveiro com alta densidade de fitoplâncton pode atingir 9,5 ao entardecer? Escreva a equação química envolvida e discuta o impacto sobre a NH₃ livre.</div>
+    <div class="field-group"><label for="c5">Resposta <span class="req">*</span></label>
+    <textarea id="c5" rows="5" placeholder="Resposta fundamentada quimicamente..." required></textarea></div>
+  </div>
+</div>
+
+</main>
+
+<!-- BARRA INFERIOR FIXA -->
+<div class="footer-bar" style="flex-wrap:wrap">
+  <button class="btn-clear" onclick="limparFormulario()" title="Limpar formulário">🗑</button>
+  <button class="btn-main" style="min-width:140px" onclick="gerarPDF()">📄 Gerar PDF</button>
+  <button class="btn-main" id="btnEmail" style="min-width:140px;opacity:.5" onclick="enviarEmail()" disabled>✉️ Enviar por E-mail</button>
+</div>
+<div id="pdfAlert" style="display:none;position:fixed;bottom:78px;left:12px;right:12px;background:#1A7A3C;color:#fff;border-radius:8px;padding:10px 14px;font-size:13px;z-index:201;box-shadow:0 2px 8px rgba(0,0,0,.2)">✅ PDF baixado! Clique em "Enviar por E-mail" e anexe o arquivo antes de enviar.</div>
+
+<script>
+
+const EXP_NUM = "01";
+const EXP_TITLE = "Determinação de pH em Amostras de Água de Cultivo";
+const EXP_UNIT = "III";
+
+function fv(id){ return (document.getElementById(id)||{}).value||""; }
+function fr(name){ const r=document.querySelector('input[name="'+name+'"]:checked'); return r?r.value:"Não respondido"; }
+
+function validateRequired(){
+  const req = document.querySelectorAll('[required]');
+  for(const el of req){ if(!el.value.trim()){ el.focus(); el.style.borderColor='#B03030'; return false; } el.style.borderColor=''; }
+  return true;
+}
+
+function formatDate(){
+  const d=new Date(); return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR');
+}
+
+function gerarPDF(){
+  if(!validateRequired()){ alert('⚠️ Preencha todos os campos obrigatórios antes de gerar o PDF!'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const margin = 14, maxW = 182; let y = 18;
+  doc.setFont('helvetica','bold'); doc.setFontSize(12);
+  doc.text('Relatório Exp. '+EXP_NUM+' — '+EXP_TITLE, margin, y, {maxWidth:maxW});
+  y += 9;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10);
+  const texto = montarMensagem().replace(/\*/g,'');
+  texto.split('\n').forEach(linha=>{
+    const wrapped = doc.splitTextToSize(linha||' ', maxW);
+    wrapped.forEach(w=>{
+      if(y > 280){ doc.addPage(); y = 18; }
+      doc.text(w, margin, y);
+      y += 6;
+    });
+  });
+  const n1 = fv('nome1').replace(/[^a-zA-Z0-9]/g,'_')||'Discente1';
+  const n2 = fv('nome2').replace(/[^a-zA-Z0-9]/g,'_')||'Discente2';
+  window._pdfFilename = 'RelatorioExp'+EXP_NUM+'_'+n1+'_'+n2+'.pdf';
+  doc.save(window._pdfFilename);
+  const btnE = document.getElementById('btnEmail');
+  btnE.disabled = false; btnE.style.opacity = '1';
+  const al = document.getElementById('pdfAlert');
+  al.style.display = 'block';
+  setTimeout(()=>{ al.style.display='none'; }, 6000);
+}
+
+function enviarEmail(){
+  const assunto = encodeURIComponent('Relatório Exp.'+EXP_NUM+' — '+fv('nome1')+' e '+fv('nome2')+' — '+fv('turma'));
+  const corpo = encodeURIComponent(
+    'Prezado Prof. Paulo Garcês,\n\nSegue em anexo o relatório do Experimento '+EXP_NUM+' — '+EXP_TITLE+'.\n\n'+
+    'Discente 1: '+fv('nome1')+'\nDiscente 2: '+fv('nome2')+'\nTurma: '+fv('turma')+'\n\n'+
+    'IMPORTANTE: anexe o arquivo PDF baixado ('+(window._pdfFilename||('RelatorioExp'+EXP_NUM+'.pdf'))+') antes de enviar este e-mail.\n\nAtenciosamente.'
+  );
+  window.location.href = 'mailto:paulogoncalvesjr@ifma.edu.br?subject='+assunto+'&body='+corpo;
+}
+
+function limparFormulario(){
+  if(!confirm('Deseja apagar todos os campos?')) return;
+  document.querySelectorAll('input[type=text],input[type=number],textarea').forEach(el=>el.value='');
+  document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
+  const btnE = document.getElementById('btnEmail');
+  btnE.disabled = true; btnE.style.opacity = '.5';
+  window._pdfFilename = null;
+}
+
+
+function montarMensagem(){
+  return (
+    "📋 *RELATÓRIO EXPERIMENTAL — EXPERIMENTO 01 — DETERMINAÇÃO DE PH EM AMOSTRAS DE ÁGUA DE CULTIVO*\n"+
+    "🏫 IFMA Maracanã | Química Aplicada à Aquicultura | 2026.1\n\n"+
+    "👥 *IDENTIFICAÇÃO DA DUPLA*\n"+
+    "Discente 1: "+fv("nome1")+"\n"+
+    "Discente 2: "+fv("nome2")+"\n"+
+    "Turma: "+fv("turma")+"\n"+
+    "Data da Aula: "+fv("data_aula")+"\n\n"+
+    "---\n\n"+
+    "⚗️ *CRITÉRIO 1 — DADOS EXPERIMENTAIS*\n"+
+    "• Amostra 1 (Viveiro): "+"pH pHmetro: "+fv("c1_s1_f1")+" | "+"pH kit colorimétrico: "+fv("c1_s1_f2")+" | "+"Temperatura (°C): "+fv("c1_s1_f3")+"\n"+
+    "• Amostra 2 (Torneira): "+"pH pHmetro: "+fv("c1_s2_f1")+" | "+"pH kit colorimétrico: "+fv("c1_s2_f2")+" | "+"Temperatura (°C): "+fv("c1_s2_f3")+"\n"+
+    "• Amostra 3 (Salgada): "+"pH pHmetro: "+fv("c1_s3_f1")+" | "+"pH kit colorimétrico: "+fv("c1_s3_f2")+" | "+"Temperatura (°C): "+fv("c1_s3_f3")+"\n\n"+
+    "---\n\n"+
+    "🧮 *CRITÉRIO 2 — CÁLCULOS*\n"+
+    "1. Cálculo de [H⁺] — Amostra 1:\n"+fv("c2_p1")+"\n\n"+
+    "2. Cálculo de [H⁺] — Amostra 2:\n"+fv("c2_p2")+"\n\n"+
+    "3. Diferença pHmetro vs Kit (todas amostras):\n"+fv("c2_p3")+"\n\n"+
+    "---\n\n"+
+    "🔬 *CRITÉRIO 3 — ANÁLISE E INTERPRETAÇÃO*\n"+
+    "Amostra 1 (Viveiro): Faixa ideal? "+fr("c3_s1_faixa")+"\nDiagnóstico: "+fv("c3_s1_diag")+"\nAção: "+fv("c3_s1_acao")+"\n\n"+
+    "Amostra 2 (Torneira): Faixa ideal? "+fr("c3_s2_faixa")+"\nDiagnóstico: "+fv("c3_s2_diag")+"\nAção: "+fv("c3_s2_acao")+"\n\n"+
+    "Amostra 3 (Salgada): Faixa ideal? "+fr("c3_s3_faixa")+"\nDiagnóstico: "+fv("c3_s3_diag")+"\nAção: "+fv("c3_s3_acao")+"\n\n"+
+    "---\n\n"+
+    "📝 *CRITÉRIO 4 — CONCLUSÃO*\n"+
+    fv("c4")+"\n\n"+
+    "---\n\n"+
+    "❓ *CRITÉRIO 5 — QUESTÃO DE DISCUSSÃO*\n"+
+    "Pergunta: Por que o pH de um viveiro com alta densidade de fitoplâncton pode atingir 9,5 ao entardecer? Escreva a equação química envolvida e discuta o impacto sobre a NH₃ livre.\n"+
+    "Resposta: "+fv("c5")+"\n\n"+
+    "---\n"+
+    "⏰ Enviado em: "+formatDate()
+  );
+}
+
+</script>
+</body>
+</html>
